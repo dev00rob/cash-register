@@ -21,7 +21,7 @@ in time.
 function checkCashRegister(price, cash, cid) {
     let cashDue = getCashDue(cash, price);
     let drawer = getDrawerTotal(cid);
-    // console.log(drawer + " available cash, " + cashDue + " cash due");
+    console.log(drawer + " available cash, " + cashDue + " cash due");
 
     if (drawer === cashDue) { return "Closed"; }
     if (drawer < cashDue) { return "Insufficient Funds"; }
@@ -31,7 +31,28 @@ function checkCashRegister(price, cash, cid) {
     const DENOMS_IN_CENTS = [1, 5, 10, 25, 100, 500, 1000, 2000, 10000];
     let denomsInDrawer = addDenomCount(DENOMS_IN_CENTS, cid);
     let change = setupChange(cid);
-    console.log(denomsInDrawer);
+    // console.log(denomsInDrawer);
+
+    for (let i = cid.length - 1; i > -1; i--) {
+        // console.log(DENOMS_IN_CENTS[i] / 100);
+        let nextDenomValue = DENOMS_IN_CENTS[i] / 100,
+            nextDenomCount = denomsInDrawer[i];
+        // console.log(nextDenom);
+        if (nextDenomValue < cashDue && nextDenomCount > 0) {
+            // console.log(denomsInDrawer[i]);
+            // take from drawer, pass to change
+            for (let j = nextDenomCount; j > 0; j--) {
+                let denomTry = nextDenomValue * j;
+                if (cashDue > denomTry) {
+                    change[i][1] = denomTry;
+                    cashDue -= denomTry;
+                    break;
+                }
+            }
+        }
+    }
+    console.log(change);
+    console.log(getDrawerTotal(change) + " in change");
 
 
     // for loop thru cid
