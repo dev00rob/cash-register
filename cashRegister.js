@@ -19,15 +19,68 @@ get a small part of the register working create a commit to mark that moment
 in time.
  */
 function checkCashRegister(price, cash, cid) {
-    let availableCash = getTotal(cid);
+    let cashDue = getCashDue(cash, price);
+    let drawer = getDrawerTotal(cid);
+    // console.log(drawer + " available cash, " + cashDue + " cash due");
+
+    if (drawer === cashDue) { return "Closed"; }
+    if (drawer < cashDue) { return "Insufficient Funds"; }
+
+    // Insufficient Funds  -> can't return exact change
+
+    const DENOMS_IN_CENTS = [1, 5, 10, 25, 100, 500, 1000, 2000, 10000];
+    let denomsInDrawer = addDenomCount(DENOMS_IN_CENTS, cid);
+    let change = setupChange(cid);
+    console.log(denomsInDrawer);
+
+
+    // for loop thru cid
+    // for (let i = cid.length - 1; i > -1; i--) {
+    //     console.log(DENOMS_IN_CENTS[i] / 100);
+    // }
+    // check from highest to lowest denom
+    // subtract each denom value from both cid and cashDue
+    // check each iteration if cashDue = 0, if so break
+    // if end of loop reached and cashDue>0 -> Insufficient funds
 }
 
-function getTotal(drawer) {
+function getCashDue(casho, priceo) {
+    return parseFloat((casho - priceo).toFixed(2));
+}
+
+function getDrawerTotal(cido) {
     let casho = 0;
-    for (let i = 0, x = drawer.length; i < x; i++) {
-        casho += parseInt((drawer[i][1] * 100).toFixed(0), 10);
+    for (let i = 0, x = cido.length; i < x; i++) {
+        casho += parseInt((cido[i][1] * 100).toFixed(0), 10);
     }
     return parseFloat((casho / 100).toFixed(2));
+}
+
+function addDenomCount(allDenomsInCents, drawer) {
+    let result = [];
+    for (let i = 0, x = drawer.length; i < x; i++) {
+        result[i] = ((Math.round((drawer[i][1]) * 100)) / allDenomsInCents[i]);
+    }
+    return result;
+}
+
+function setupChange(ciddy) {
+    let result = [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+    ];
+    for (let i = 0, x = ciddy.length; i < x; i++) {
+        result[i][0] = ciddy[i][0];
+        result[i][1] = 0;
+    }
+    return result;
 }
 
 checkCashRegister(3.26, 100, [
