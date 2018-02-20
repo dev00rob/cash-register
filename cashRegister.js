@@ -42,10 +42,11 @@ function checkCashRegister(price, cash, cid) {
             // console.log(denomsInDrawer[i]);
             // take from drawer, pass to change
             for (let j = nextDenomCount; j > 0; j--) {
-                let denomTry = nextDenomValue * j;
-                if (cashDue > denomTry) {
+                let denomTry = parseFloat((nextDenomValue * j).toFixed(2));
+                // console.log(denomTry);
+                if (cashDue >= denomTry) {
                     change[i][1] = denomTry;
-                    cashDue -= denomTry;
+                    cashDue = parseFloat((cashDue - denomTry).toFixed(2));
                     break;
                 }
             }
