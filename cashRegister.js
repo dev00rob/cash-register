@@ -19,51 +19,39 @@ get a small part of the register working create a commit to mark that moment
 in time.
  */
 function checkCashRegister(price, cash, cid) {
-    let cashDue = getCashDue(cash, price);
+    const cashDue = getCashDue(cash, price);
     let drawer = getDrawerTotal(cid);
-    console.log(drawer + " available cash, " + cashDue + " cash due");
+    // console.log(drawer + " available cash, " + cashDue + " cash due");
 
-    if (drawer === cashDue) { return "Closed"; }
-    if (drawer < cashDue) { return "Insufficient Funds"; }
+    if (drawer === cashDue) { return console.log("Closed"); }
+    if (drawer < cashDue) { return console.log("Insufficient Funds"); }
 
-    // Insufficient Funds  -> can't return exact change
-
+    let tmpCashDue = cashDue;
     const DENOMS_IN_CENTS = [1, 5, 10, 25, 100, 500, 1000, 2000, 10000];
     let denomsInDrawer = addDenomCount(DENOMS_IN_CENTS, cid);
-    let change = setupChange(cid);
-    // console.log(denomsInDrawer);
+    let changeArray = setupChange(cid);
 
     for (let i = cid.length - 1; i > -1; i--) {
-        // console.log(DENOMS_IN_CENTS[i] / 100);
         let nextDenomValue = DENOMS_IN_CENTS[i] / 100,
             nextDenomCount = denomsInDrawer[i];
-        // console.log(nextDenom);
-        if (nextDenomValue < cashDue && nextDenomCount > 0) {
-            // console.log(denomsInDrawer[i]);
-            // take from drawer, pass to change
+        if (nextDenomValue < tmpCashDue && nextDenomCount > 0) {
             for (let j = nextDenomCount; j > 0; j--) {
                 let denomTry = parseFloat((nextDenomValue * j).toFixed(2));
-                // console.log(denomTry);
-                if (cashDue >= denomTry) {
-                    change[i][1] = denomTry;
-                    cashDue = parseFloat((cashDue - denomTry).toFixed(2));
+                if (tmpCashDue >= denomTry) {
+                    changeArray[i][1] = denomTry;
+                    tmpCashDue = parseFloat((tmpCashDue - denomTry).toFixed(2));
                     break;
                 }
             }
         }
     }
-    console.log(change);
-    console.log(getDrawerTotal(change) + " in change");
 
+    let change = getDrawerTotal(changeArray);
+    // console.log(change, "change", cashDue, "cashDue");
+    if (change != cashDue) { return console.log("Insufficient Funds"); }
 
-    // for loop thru cid
-    // for (let i = cid.length - 1; i > -1; i--) {
-    //     console.log(DENOMS_IN_CENTS[i] / 100);
-    // }
-    // check from highest to lowest denom
-    // subtract each denom value from both cid and cashDue
-    // check each iteration if cashDue = 0, if so break
-    // if end of loop reached and cashDue>0 -> Insufficient funds
+    return console.log(changeArray);
+
 }
 
 function getCashDue(casho, priceo) {
@@ -105,17 +93,17 @@ function setupChange(ciddy) {
     return result;
 }
 
-checkCashRegister(3.26, 100, [
-    ["PENNY", 1.01],
-    ["NICKEL", 2.05],
-    ["DIME", 3.10],
-    ["QUARTER", 4.25],
-    ["ONE", 90],
-    ["FIVE", 55],
-    ["TEN", 20],
-    ["TWENTY", 60],
-    ["ONE HUNDRED", 100]
-]);
+// checkCashRegister(3.26, 100, [
+//     ["PENNY", 1.01],
+//     ["NICKEL", 2.05],
+//     ["DIME", 3.10],
+//     ["QUARTER", 4.25],
+//     ["ONE", 90],
+//     ["FIVE", 55],
+//     ["TEN", 20],
+//     ["TWENTY", 60],
+//     ["ONE HUNDRED", 100]
+// ]);
 
 
 // Should return: 
